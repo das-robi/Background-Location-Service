@@ -1,4 +1,4 @@
-package com.devrobin.locationservice.MVVMROOM.model;
+package com.devrobin.locationservice.MVVM_ROOM.model;
 
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
@@ -10,12 +10,12 @@ public class LocationData {
 
     @PrimaryKey(autoGenerate = true)
     private int locId;
-
-    @SerializedName("cityName")
-    private String cityName;
-
-    @SerializedName("areaName")
-    private String areaName;
+//
+//    @SerializedName("countryName")
+//    private String countryName;
+//
+//    @SerializedName("areaName")
+//    private String areaName;
 
     @SerializedName("lat")
     private double lat;
@@ -26,11 +26,10 @@ public class LocationData {
     @SerializedName("timestamp")
     private long timestamp;
 
-    public LocationData(String cityName, double lat, double lng, String areaName) {
-        this.cityName = cityName;
+    public LocationData(double lat, double lng, long timestamp) {
         this.lat = lat;
         this.lng = lng;
-        this.areaName = areaName;
+        this.timestamp = timestamp;
     }
 
     //Getters and Setters
@@ -40,14 +39,6 @@ public class LocationData {
 
     public void setLocId(int locId) {
         this.locId = locId;
-    }
-
-    public String getCityName() {
-        return cityName;
-    }
-
-    public void setCityName(String cityName) {
-        this.cityName = cityName;
     }
 
     public double getLat() {
@@ -72,13 +63,5 @@ public class LocationData {
 
     public void setTimestamp(long timestamp) {
         this.timestamp = timestamp;
-    }
-
-    public String getAreaName() {
-        return areaName;
-    }
-
-    public void setAreaName(String areaName) {
-        this.areaName = areaName;
     }
 }

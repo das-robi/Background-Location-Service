@@ -1,13 +1,13 @@
-package com.devrobin.locationservice.MVVMROOM.Repository;
+package com.devrobin.locationservice.MVVM_ROOM.Repository;
 
 import android.app.Application;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
-import com.devrobin.locationservice.MVVMROOM.DAODatabase.LocationDAO;
-import com.devrobin.locationservice.MVVMROOM.DAODatabase.LocationDatabase;
-import com.devrobin.locationservice.MVVMROOM.model.LocationData;
+import com.devrobin.locationservice.MVVM_ROOM.DAODatabase.LocationDAO;
+import com.devrobin.locationservice.MVVM_ROOM.DAODatabase.LocationDatabase;
+import com.devrobin.locationservice.MVVM_ROOM.model.LocationData;
 
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -15,7 +15,6 @@ import java.util.concurrent.Executors;
 
 public class LocationRepository {
 
-    private MutableLiveData<List<LocationData>> allLocation;
     private LocationDAO locationDAO;
     private ExecutorService executorService;
 
@@ -37,6 +36,6 @@ public class LocationRepository {
     }
 
     public LiveData<List<LocationData>> getAllLocations(){
-        return allLocation;
+        return locationDAO.getAllLocations();
     }
 }
