@@ -1,12 +1,10 @@
-package com.devrobin.locationservice.MVVM_ROOM.DAODatabase;
+package com.devrobin.locationservice.MVVM;
 
 import android.content.Context;
 
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
-
-import com.devrobin.locationservice.MVVM_ROOM.model.LocationData;
 
 @Database(entities = {LocationData.class}, version = 1)
 public abstract class LocationDatabase extends RoomDatabase {

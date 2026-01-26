@@ -6,85 +6,117 @@ import java.util.List;
 
 public class WeatherResponse {
 
-    @SerializedName("name")
-    private String cityName;
-
-    @SerializedName("coord")
-    private String coord;
-
-    @SerializedName("main")
-    private String main;
-
     @SerializedName("weather")
     private List<Weather> weathers;
 
+    @SerializedName("main")
+    private Main main;
+
+    @SerializedName("name")
+    private String cityName;
+
+    @SerializedName("cod")
+    private int cod;
+
+    @SerializedName("message")
+    private String message;
 
     //Getters
-    public String getCityName() {
-        return cityName;
-    }
-
-    public String getCoord() {
-        return coord;
-    }
-
-    public String getMain() {
-        return main;
-    }
-
     public List<Weather> getWeathers() {
         return weathers;
     }
 
-    //Inner classes
-    public static class Weather {
+    public Main getMain() {
+        return main;
+    }
+
+    public String getCityName() {
+        return cityName;
+    }
+
+    public int getCod() {
+        return cod;
+    }
+
+    public Throwable getMessage() {
+        return message;
+    }
+
+    //Nested class for Weather array
+    public static class Weather{
+
+        @SerializedName("id")
+        private int id;
 
         @SerializedName("main")
-        private String mains;
+        private int main;
 
         @SerializedName("description")
-        private String description;
+        private String weather_description;
 
-        public String getMains() {
-            return mains;
+        //Getters and Setters
+        public int getId() {
+            return id;
         }
 
-        public String getDescription() {
-            return description;
+        public void setId(int id) {
+            this.id = id;
+        }
+
+        public int getMain() {
+            return main;
+        }
+
+        public void setMain(int main) {
+            this.main = main;
+        }
+
+        public String getWeather_description() {
+            return weather_description;
+        }
+
+        public void setWeather_description(String weather_description) {
+            this.weather_description = weather_description;
         }
     }
 
-    public static class Coord{
-
-        @SerializedName("lan")
-        private double lan;
-
-        @SerializedName("lon")
-        private double lon;
-
-        public double getLan() {
-            return lan;
-        }
-
-        public double getLon() {
-            return lon;
-        }
-    }
-
-    public static class main{
+    //Nested class for Main weather data
+    public static class Main{
 
         @SerializedName("temp")
-        private String temp;
+        private double temp;
 
         @SerializedName("humidity")
-        private String humidity;
+        private int humidity;
 
-        public String getTemp() {
+        @SerializedName("pressure")
+        private int pressure;
+
+        //Getters and Setters
+
+
+        public double getTemp() {
             return temp;
         }
 
-        public String getHumidity() {
+        public void setTemp(double temp) {
+            this.temp = temp;
+        }
+
+        public int getHumidity() {
             return humidity;
+        }
+
+        public void setHumidity(int humidity) {
+            this.humidity = humidity;
+        }
+
+        public int getPressure() {
+            return pressure;
+        }
+
+        public void setPressure(int pressure) {
+            this.pressure = pressure;
         }
     }
 }

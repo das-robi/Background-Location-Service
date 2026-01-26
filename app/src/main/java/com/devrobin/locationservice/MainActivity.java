@@ -9,6 +9,8 @@ import android.os.Build;
 import android.os.Bundle;
 
 import android.provider.Settings;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,9 +24,8 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 
-import com.devrobin.locationservice.MVVM_ROOM.VIewModel.LocationViewModel;
-import com.devrobin.locationservice.MVVM_ROOM.VIewModel.WeatherViewModel;
-import com.devrobin.locationservice.MVVM_ROOM.model.LocationData;
+import com.devrobin.locationservice.MVVM.LocationViewModel;
+import com.devrobin.locationservice.MVVM.LocationData;
 import com.devrobin.locationservice.RetrofiteServices.WeatherResponse;
 import com.devrobin.locationservice.utils.Credentials;
 
@@ -42,81 +43,48 @@ public class MainActivity extends AppCompatActivity {
 //
 //
 //    //Widgets
-//    private Button backGroundBTN;
-//    private Button foreGroundBTN;
+    private Button startBTN;
+    private Button stopBTN;
     private TextView rsltTxtvie;
 
     private static final int LOCATION_PERMISSION_CODE = 100;
 
-    private static Boolean apiCall = false;
-
 
     private LocationViewModel locationViewModel;
-    private WeatherViewModel weatherViewModel;
 
-    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
 
-//        backGroundBTN = findViewById(R.id.background);
-//        foreGroundBTN = findViewById(R.id.foreground);
+        startBTN = findViewById(R.id.background);
+        stopBTN = findViewById(R.id.foreground);
         rsltTxtvie = findViewById(R.id.results);
 
-//        locationManager = LocationManager.getInstance(this);
 //        permissionManager = PermissionManager.getInstance(this);
 
-//        Intent intent = new Intent(this, LocationForegroundService.class);
-//        startForegroundService(intent);
-
         //Set OnClink Listener
-//        foreGroundBTN.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//
-//                if (permissionManager.checkPermission(foregroundLocationsPermission)){
-//                    permissionManager.askPermission(MainActivity.this, foregroundLocationsPermission, 100);
-//                }
-//                else {
-//                    Toast.makeText(MainActivity.this, "Foreground Location is enable" +
-//                            "Now ask to the Background Locations", Toast.LENGTH_SHORT).show();
-//                }
-//
-//            }
-//        });
-//
-//        backGroundBTN.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View view) {
-//
-//                if (permissionManager.checkPermission(backgroundLocationsPermission)){
-//                    permissionManager.askPermission(MainActivity.this, backgroundLocationsPermission, 200);
-//                }
-//                else {
-//                    if (locationManager.isLocationEnable()){
-//                        startLocationWork();
-//                    }
-//                    else {
-//                        locationManager.CreateLocationRequest();
-//                        Toast.makeText(MainActivity.this, "Location service is not enable", Toast.LENGTH_SHORT).show();
-//                    }
-//                }
-//
-//            }});
+        startBTN.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                startLocationService();
+            }
+        });
+
+        stopBTN.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                stopLocationService();
+
+            }});
 
         //ViewModel
         locationViewModel = new ViewModelProvider(this).get(LocationViewModel.class);
-        weatherViewModel = new ViewModelProvider(this).get(WeatherViewModel.class);
-
 
         checkPermission();
-
         observeLocations();
-        observeWeather();
-
-
     }
 
     private void checkPermission() {
@@ -164,29 +132,15 @@ public class MainActivity extends AppCompatActivity {
         startForegroundService(intent);
     }
 
-    private void observeWeather() {
 
-        weatherViewModel.getWeatherLiveData().observe(this, new Observer<WeatherResponse>() {
-            @Override
-            public void onChanged(WeatherResponse weatherResponse) {
-                updateWeatherInfo(weatherResponse);
-            }
-        });
-
-    }
 
     private void observeLocations() {
         locationViewModel.getAllLocations().observe(this, new Observer<List<LocationData>>() {
             @Override
             public void onChanged(List<LocationData> locationData) {
 
-
-                if (locationData != null && !locationData.isEmpty()){
-
-                    double lat = locationData.get(0).getLat();
-                    double lon = locationData.get(0).getLng();
-
-                    weatherViewModel.fetchLatLon(lat, lon, Credentials.API_KEY);
+                if (locationData != null){
+                    adapter.set
                 }
 
             }
