@@ -16,7 +16,6 @@ import java.util.List;
 
 public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.LocationViewHolder> {
 
-    private Context context;
     private List<LocationData> locationList = new ArrayList<>();
 
     public void setLocations(List<LocationData> locationList){
@@ -38,8 +37,7 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Locati
 
 
         holder.placeName.setText(locationData.getPlaceName());
-
-        //Create String for Lat Long
+        holder.latitude.setText((int) locationData.getLatitude());
 
     }
 
@@ -51,12 +49,14 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Locati
 
     public class LocationViewHolder extends RecyclerView.ViewHolder{
 
-        TextView placeName, latLong, time;
+        TextView placeName,latitude, longitude, time;
 
         public LocationViewHolder(@NonNull View itemView) {
             super(itemView);
 
             placeName = itemView.findViewById(R.id.tvPlaceName);
+            latitude = itemView.findViewById(R.id.tvLat);
+            longitude = itemView.findViewById(R.id.tvLong);
             time = itemView.findViewById(R.id.tvTime);
 
         }

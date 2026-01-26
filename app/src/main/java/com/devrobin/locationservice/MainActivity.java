@@ -49,6 +49,8 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int LOCATION_PERMISSION_CODE = 100;
 
+    private LocationAdapter locationAdapter;
+
 
     private LocationViewModel locationViewModel;
 
@@ -61,6 +63,8 @@ public class MainActivity extends AppCompatActivity {
         startBTN = findViewById(R.id.background);
         stopBTN = findViewById(R.id.foreground);
         rsltTxtvie = findViewById(R.id.results);
+
+        locationAdapter = new LocationAdapter();
 
 //        permissionManager = PermissionManager.getInstance(this);
 
@@ -140,7 +144,7 @@ public class MainActivity extends AppCompatActivity {
             public void onChanged(List<LocationData> locationData) {
 
                 if (locationData != null){
-                    adapter.set
+                    locationAdapter.setLocations(locationData);
                 }
 
             }
