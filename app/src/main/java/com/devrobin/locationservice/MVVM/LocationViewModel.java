@@ -24,14 +24,6 @@ public class LocationViewModel extends AndroidViewModel {
     }
 
 
-//    public void insertLocation(LocationData locationData){
-//        repository.insertLocation(locationData);
-//    }
-//
-//    public void updateLocation(LocationData locationData){
-//        repository.UpdateDataWithLocationEntity();
-//    }
-
     public LiveData<List<LocationData>> getAllLocations(){
         return allLocations;
     }

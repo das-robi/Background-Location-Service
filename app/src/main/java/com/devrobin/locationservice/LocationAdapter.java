@@ -1,6 +1,5 @@
 package com.devrobin.locationservice;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,8 +10,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.devrobin.locationservice.MVVM.LocationData;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.LocationViewHolder> {
 
@@ -20,6 +22,7 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Locati
 
     public void setLocations(List<LocationData> locationList){
         this.locationList = locationList;
+        notifyDataSetChanged();
     }
 
     @NonNull
@@ -33,12 +36,36 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Locati
     @Override
     public void onBindViewHolder(@NonNull LocationViewHolder holder, int position) {
 
-        LocationData locationData = locationList.get(0);
-
+        LocationData locationData = locationList.get(position);
 
         holder.placeName.setText(locationData.getPlaceName());
-        holder.latitude.setText((int) locationData.getLatitude());
 
+        //Make String
+        String coordinates = String.format(Locale.getDefault(),
+                "Lat: %.6f, Lon: %.6f : Accuracy: %.0fm",
+                locationData.getLatitude(),
+                locationData.getLongitude(),
+                locationData.getAccuracy());
+
+
+        //Date and time
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd MM yyyy, hh : mm : ss a", Locale.getDefault());
+        String date = dateFormat.format(new Date(locationData.getTimestamp()));
+        holder.timeDate.setText(date);
+
+        //Weather info
+        String weatherInfo;
+        if (locationData.getWeatherDesc() != null && !locationData.getWeatherDesc().isEmpty()){
+            weatherInfo = String.format("%s %s Humidity: %s",
+                    locationData.getWeatherDesc(),
+                    locationData.getTemperature(),
+                    locationData.getHumidity());
+        }
+        else {
+            weatherInfo = "Loading...";
+        }
+
+        holder.weather.setText(weatherInfo);
     }
 
     @Override
@@ -49,15 +76,15 @@ public class LocationAdapter extends RecyclerView.Adapter<LocationAdapter.Locati
 
     public class LocationViewHolder extends RecyclerView.ViewHolder{
 
-        TextView placeName,latitude, longitude, time;
+        TextView placeName, timeDate, coordinates, weather;
 
         public LocationViewHolder(@NonNull View itemView) {
             super(itemView);
 
             placeName = itemView.findViewById(R.id.tvPlaceName);
-            latitude = itemView.findViewById(R.id.tvLat);
-            longitude = itemView.findViewById(R.id.tvLong);
-            time = itemView.findViewById(R.id.tvTime);
+            coordinates = itemView.findViewById(R.id.tvCoordinates);
+            timeDate = itemView.findViewById(R.id.tvTime);
+            weather = itemView.findViewById(R.id.tvWeather);
 
         }
     }

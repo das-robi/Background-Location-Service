@@ -28,6 +28,9 @@ public class LocationData {
     @ColumnInfo(name = "place_name")
     private String placeName;
 
+    @ColumnInfo(name = "address")
+    private String address;
+
     @ColumnInfo(name = "city")
     private String cityName;
 
@@ -107,6 +110,14 @@ public class LocationData {
         this.placeName = placeName;
     }
 
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
     public String getCityName() {
         return cityName;
     }
@@ -146,4 +157,6 @@ public class LocationData {
     public void setHumidity(String humidity) {
         this.humidity = humidity;
     }
+
+
 }

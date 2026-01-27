@@ -33,6 +33,7 @@ import com.google.android.gms.location.Priority;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Locale;
 
 public class LocationForegroundService extends Service {
 
@@ -40,22 +41,25 @@ public class LocationForegroundService extends Service {
     private static final int NOTIFICATION_ID = 100;
 
     private static FusedLocationProviderClient fusedLocationProviderClient;
-    private static LocationRequest locationRequest;
     private static LocationCallback locationCallback;
     private static LocationRepository locationRepository;
-
     private Geocoder geocoder;
+
+    private static final long UPDATE_TIME = 5 * 60 * 1000;
+    private static final long FASTEST_TIME = 2 * 60 * 1000;
+
+
 
     @Override
     public void onCreate() {
         super.onCreate();
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-        locationRepository = new LocationRepository(getApplication());
+        locationRepository = new LocationRepository(getApplicationContext());
+        geocoder = new Geocoder(this, Locale.getDefault());
 
         CreateNotificationChannel();
         createLocationCallback();
-
     }
 
     @Override
@@ -81,13 +85,13 @@ public class LocationForegroundService extends Service {
         }
 
         //Create LocationRequest
-        locationRequest = new LocationRequest.Builder(
+        LocationRequest locationRequest = new LocationRequest.Builder(
                 Priority.PRIORITY_HIGH_ACCURACY,
-                50 * 60 * 1000
+                UPDATE_TIME
         )
-                .setMinUpdateIntervalMillis(50*60*1000)
-                        .setWaitForAccurateLocation(true)
-                                .build();
+                .setMinUpdateIntervalMillis(FASTEST_TIME)
+                .setWaitForAccurateLocation(true)
+                .build();
 
 
         fusedLocationProviderClient.requestLocationUpdates(
@@ -96,7 +100,7 @@ public class LocationForegroundService extends Service {
                 Looper.getMainLooper()
         );
 
-        UpdateNotification("Place Name");
+        UpdateNotification("Location Tracking active");
     }
 
     public void createLocationCallback(){
@@ -104,7 +108,6 @@ public class LocationForegroundService extends Service {
         locationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(@NonNull LocationResult locationResult) {
-
 
                 if (locationResult == null){
                     Log.d("Tag", "LocationResult is null");
@@ -155,9 +158,8 @@ public class LocationForegroundService extends Service {
 
                     //sub locality
                     if (addr.getSubLocality() != null){
-
-                        if (fullAddress.length() >= 0){
-                            fullAddress.append(" ");
+                        if (fullAddress.length() > 0){
+                            fullAddress.append(", ");
                         }
                         fullAddress.append(addr.getSubLocality());
                     }
@@ -165,8 +167,8 @@ public class LocationForegroundService extends Service {
                     //Locality
                     if (addr.getLocality() != null){
 
-                        if (fullAddress.length() >= 0){
-                            fullAddress.append(" ");
+                        if (fullAddress.length() > 0){
+                            fullAddress.append(", ");
                         }
                         fullAddress.append(addr.getLocality());
                         cityName = addr.getLocality();
@@ -175,8 +177,8 @@ public class LocationForegroundService extends Service {
                     //Main Area
                     if (addr.getAdminArea() != null){
 
-                        if (fullAddress.length() >= 0){
-                            fullAddress.append(" ");
+                        if (fullAddress.length() > 0){
+                            fullAddress.append(", ");
                         }
                         fullAddress.append(addr.getAdminArea());
                     }
@@ -184,7 +186,7 @@ public class LocationForegroundService extends Service {
 
                     //Country
                     if (addr.getCountryName() != null){
-                        if (fullAddress.length() >= 0){
+                        if (fullAddress.length() > 0){
                             fullAddress.append(" ");
                         }
 
@@ -192,6 +194,7 @@ public class LocationForegroundService extends Service {
                         countryName = addr.getCountryName();
                     }
 
+                    address = fullAddress.toString();
 
                     //Short place name
                     if (cityName != null && !cityName.isEmpty() && countryName != null && !countryName.isEmpty()){
@@ -218,16 +221,16 @@ public class LocationForegroundService extends Service {
 
 
         //Show Toast with place name
-        Toast.makeText(this, "\nLat: %.6f " + latitude + "\nLong: %.6f " + " " + placeName, Toast.LENGTH_SHORT).show();
+        String toastMessage = String.format("%s\nLat: %.6f, Lon: %.6f", placeName, latitude, longitude);
+        Toast.makeText(this, toastMessage, Toast.LENGTH_SHORT).show();
 
 
         //Create Location entity
         LocationData locationData = new LocationData(latitude, longitude, timestamp, accuracy, provider);
-        locationData.setLatitude(latitude);
-        locationData.setLongitude(longitude);
-        locationData.setTimestamp(timestamp);
-        locationData.setAccuracy(accuracy);
-        locationData.setProvider(provider);
+        locationData.setPlaceName(placeName);
+        locationData.setAddress(address);
+        locationData.setCityName(cityName);
+        locationData.setCountryName(countryName);
 
         //call Repository for insert data
         locationRepository.insertLocation(locationData);
@@ -239,16 +242,18 @@ public class LocationForegroundService extends Service {
     public void CreateNotificationChannel(){
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O){
 
-            NotificationChannel channel = new NotificationChannel(
+            NotificationChannel notificationChannel = new NotificationChannel(
                     CHANNEL_ID,
                     "Location Services",
                     NotificationManager.IMPORTANCE_LOW
             );
 
-            channel.setDescription("Track your location in Background");
+            notificationChannel.setDescription("Tracks your location in Background");
 
             NotificationManager notificationManager = getSystemService(NotificationManager.class);
-            notificationManager.createNotificationChannel(channel);
+            if (notificationManager != null){
+                notificationManager.createNotificationChannel(notificationChannel);
+            }
         }
     }
 
@@ -263,7 +268,7 @@ public class LocationForegroundService extends Service {
         );
 
         return new NotificationCompat.Builder(this, CHANNEL_ID)
-                .setContentTitle("Location Active")
+                .setContentTitle("Location Active ->")
                 .setContentText(contentTxt)
                 .setSmallIcon(R.drawable.ic_launcher_foreground)
                 .setOngoing(true)
@@ -272,11 +277,11 @@ public class LocationForegroundService extends Service {
                 .build();
     }
 
-    private void UpdateNotification(String placeName){
+    private void UpdateNotification(String contentText){
 
-        NotificationManager manager = getSystemService(NotificationManager.class);
+        NotificationManager manager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         if (manager != null){
-            manager.notify(NOTIFICATION_ID, CreateNotification(placeName));
+            manager.notify(NOTIFICATION_ID, CreateNotification(contentText));
         }
 
     }

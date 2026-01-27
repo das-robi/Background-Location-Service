@@ -22,17 +22,17 @@
             android:textSize="15sp"/>
 
         <TextView
-            android:id="@+id/tvLat"
+            android:id="@+id/tvCoordinates"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Lat: 8939493"
             android:textSize="15sp"/>
 
         <TextView
-            android:id="@+id/tvLong"
+            android:id="@+id/tvWeather"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Lat: 8939493"
+            android:text="38 C"
             android:textSize="15sp"/>
 
         <TextView

@@ -38,7 +38,7 @@ public class WeatherResponse {
         return cod;
     }
 
-    public Throwable getMessage() {
+    public String getMessage() {
         return message;
     }
 
@@ -59,25 +59,16 @@ public class WeatherResponse {
             return id;
         }
 
-        public void setId(int id) {
-            this.id = id;
-        }
-
         public int getMain() {
             return main;
         }
 
-        public void setMain(int main) {
-            this.main = main;
-        }
 
         public String getWeather_description() {
             return weather_description;
         }
 
-        public void setWeather_description(String weather_description) {
-            this.weather_description = weather_description;
-        }
+
     }
 
     //Nested class for Main weather data

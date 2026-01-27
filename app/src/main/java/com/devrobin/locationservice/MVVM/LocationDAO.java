@@ -26,8 +26,9 @@ public interface LocationDAO {
     @Query("SELECT * FROM location_table ORDER BY timestamp DESC LIMIT 1")
     LiveData<LocationData> getLastLocations();
 
-    @Query("SELECT * FROM location_table WHERE id :id ")
+    @Query("SELECT * FROM location_table WHERE id =:id ")
     LocationData getLocationById(int id);
+    
 
     @Query("DELETE FROM location_table")
     void DeleteLocation();

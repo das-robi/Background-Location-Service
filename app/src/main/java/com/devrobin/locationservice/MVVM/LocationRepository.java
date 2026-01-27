@@ -1,11 +1,11 @@
 package com.devrobin.locationservice.MVVM;
 
-import android.app.Application;
+import android.content.Context;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 
-import com.devrobin.locationservice.RetrofiteServices.RetrofitBuilder;
+import com.devrobin.locationservice.RetrofiteServices.RetrofitClient;
 import com.devrobin.locationservice.RetrofiteServices.WeatherResponse;
 import com.devrobin.locationservice.utils.Credentials;
 import com.devrobin.locationservice.RetrofiteServices.LocationAPIServices;
@@ -24,11 +24,10 @@ public class LocationRepository {
     private LocationAPIServices locationAPIServices;
     private ExecutorService executorService;
 
-    public LocationRepository(Application application){
-
-        LocationDatabase locationDatabase = LocationDatabase.getInstance(application);
+    public LocationRepository(Context context){
+        LocationDatabase locationDatabase = LocationDatabase.getInstance(context);
         locationDAO = locationDatabase.locationDAO();
-        locationAPIServices = RetrofitBuilder.getLocationAPIServices();
+        locationAPIServices = RetrofitClient.getApiService();
         executorService = Executors.newSingleThreadExecutor();
     }
 
@@ -49,11 +48,13 @@ public class LocationRepository {
 
         if (Credentials.API_KEY.equals("adb5315b18d7c27855ceca58b4519731")){
             Log.w("Tag", "API is not configured skipping fetch data");
+            return;
         }
 
         //Invalid Coordinates
         if (latitude < -90 || latitude > 90 || longitude < -180 || longitude > 180){
             Log.d("Tag", "Coordinates: " + latitude + longitude);
+            return;
         }
 
         //Make API call
@@ -64,21 +65,18 @@ public class LocationRepository {
             public void onResponse(Call<WeatherResponse> call, Response<WeatherResponse> response) {
 
                 if (response.isSuccessful() && response.body() != null){
-
                     WeatherResponse weatherResponse = response.body();
 
-                    if (response.code() == 200){
-
+                    if (weatherResponse.getCod() == 200){
                         UpdateDataWithLocationEntity(locId, weatherResponse);
-
                     }
                     else {
-                        Log.d("Tag", "API is error", weatherResponse.getMessage());
+                        Log.d("Tag", "API is error" + weatherResponse.getMessage());
                     }
 
                 }
                 else {
-                    Log.d("Tag", "API call failed");
+                    Log.d("Tag", "API call failed" + response.code());
                 }
 
             }
@@ -103,7 +101,6 @@ public class LocationRepository {
 
                     //Get Weather data
                     if (weatherResponse.getWeathers() != null && !weatherResponse.getWeathers().isEmpty()){
-
                         String description = weatherResponse.getWeathers().get(0).getWeather_description();
                         locations.setWeatherDesc(description);
 
@@ -115,10 +112,11 @@ public class LocationRepository {
                         double temp = weatherResponse.getMain().getTemp();
                         int humidity = weatherResponse.getMain().getHumidity();
 
-                        locations.setTemperature(String.valueOf(temp));
-                        locations.setHumidity(humidity + "%d");
+                        locations.setTemperature(String.format("%.1fC", temp));
+                        locations.setHumidity(humidity + "%");
                     }
 
+                    //Update Database
                     locationDAO.updateLocation(locations);
 
                 }
@@ -150,7 +148,7 @@ public class LocationRepository {
     public void ShutDown(){
 
         if (executorService != null && executorService.isShutdown()){
-            executorService.isShutdown();
+            executorService.shutdown();
         }
 
     }
